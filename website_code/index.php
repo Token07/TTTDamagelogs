@@ -446,7 +446,7 @@ if (isset($_GET['map_loaded_list'])) {
 }
 if (isset($_GET['round_list'])) {
 	$round = (int) $_GET['round_list'];
-	$result = $db->query('SELECT date, map, round, UNCOMPRESS(damagelog) AS damagelog FROM '.$db_config['table'].' WHERE id = '.$round.' LIMIT 1');
+	$result = $db->query('SELECT date, map, round, damagelog FROM '.$db_config['table'].' WHERE id = '.$round.' LIMIT 1');
 	$round_info = $result->fetch_assoc();
 	$result->free();
 	unset($result);

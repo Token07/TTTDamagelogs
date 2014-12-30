@@ -92,7 +92,7 @@ hook.Add("TTTEndRound", "Damagelog_EndRound", function()
 		logs = util.TableToJSON(logs)
 		local t = os.time()
 		if Damagelog.Use_MySQL and Damagelog.MySQL_Connected then
-			local insert = string.format("INSERT INTO damagelog_oldlogs(`date`, `round`, `map`, `damagelog`) VALUES(%i, %i, \"%s\", COMPRESS(%s));",
+			local insert = string.format("INSERT INTO damagelog_oldlogs(`date`, `round`, `map`, `damagelog`) VALUES(%i, %i, \"%s\", %s);",
 				t, Damagelog.CurrentRound, game.GetMap(), sql.SQLStr(logs))
 			local query = Damagelog.database:query(insert)
 			query:start()
@@ -161,12 +161,12 @@ end)
 net.Receive("DL_AskOldLog", function(_,ply)
 	local _time = net.ReadUInt(32)
 	if Damagelog.Use_MySQL and Damagelog.MySQL_Connected then
-		local query = Damagelog.database:query("SELECT UNCOMPRESS(damagelog) FROM damagelog_oldlogs WHERE date = ".._time..";")
+		local query = Damagelog.database:query("SELECT damagelog FROM damagelog_oldlogs WHERE date = ".._time..";")
 		query.onSuccess = function(self)
 			local data = self:getData()
 			net.Start("DL_SendOldLog")
-			if data[1] and data[1]["UNCOMPRESS(damagelog)"] then
-				local compressed = util.Compress(data[1]["UNCOMPRESS(damagelog)"])
+			if data[1] and data[1]["damagelog"] then
+				local compressed = util.Compress(data[1]["damagelog"])
 				SendLogs(ply, compressed, false)
 			else
 				SendLogs(ply, nil, true)
